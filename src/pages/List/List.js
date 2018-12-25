@@ -20,9 +20,15 @@ const CreateForm = Form.create()(props => {
   const { modalVisible, form, handleAdd, handleModalVisible } = props;
   const okHandle = () => {
     form.validateFields((err, fieldsValue) => {
+      let newFormVal = {};
+      const newStatus = parseInt(fieldsValue.status);
+      newFormVal = {
+        ...fieldsValue,
+        status: newStatus
+      };
       if (err) return;
       form.resetFields();
-      handleAdd(fieldsValue);
+      handleAdd(newFormVal);
     });
   };
   return (
@@ -88,7 +94,7 @@ class MeetingList extends Component {
     });
   }
 
-  renderSimpleForm() {
+  renderSimpleForm = () => {
     const {
       form: { getFieldDecorator },
     } = this.props;
@@ -123,19 +129,19 @@ class MeetingList extends Component {
         </Row>
       </Form>
     );
-  }
+  };
 
-  renderForm() {
+  renderForm = () => {
     const { expandForm } = this.state;
     return expandForm ? this.renderAdvancedForm() : this.renderSimpleForm();
-  }
+  };
 
-  reloadTable(){
+  reloadTable = () => {
     const {dispatch} = this.props;
-
     dispatch({
       type: 'rule/fetch',
     }).then((response)=>{
+      console.log('response+++',response.data);
       const newData = response.data.map((item,index)=>({
         ...item,
         key:`meet${index+1}`
@@ -144,10 +150,11 @@ class MeetingList extends Component {
         meetData: newData
       })
     });
-  }
+  };
 
   handleAdd = fields => {
     const { dispatch } = this.props;
+    console.info('fields',fields);
     dispatch({
       type: 'rule/addMeet',
       payload: {

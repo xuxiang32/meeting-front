@@ -135,17 +135,18 @@ export async function queryMeetList() {
     });
 }
 
-export async function addMeetRoom() {
+export async function addMeetRoom(params) {
   return request('/api/meetingroom/addNewMeetingroom',
     {
       method: 'POST',
+      body: params
     });
 }
 
 export async function deleteMeetList(id) {
   return request(`/api/meetingroom/deletemeetingroom/${id}`,
     {
-      method: 'delete',
+      method: 'DELETE',
       payload: id
     });
 }

@@ -20,8 +20,12 @@ export default {
       });
       return response;
     },
-    *addMeet({ payload },{ call }){
+    *addMeet({ payload },{ call,put }){
       const response = yield call(addMeetRoom, payload);
+      yield put({
+        type: 'save',
+        payload: response,
+      });
       return response;
     },
     *deleteMeet({ payload },{ call }){

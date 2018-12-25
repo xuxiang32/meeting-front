@@ -109,7 +109,7 @@ export default {
   },
   proxy: {
     "/api": {
-      "target": "http://rap2api.taobao.org/app/mock/118863/",
+      "target": "http://118.25.11.35:9099/",
       "changeOrigin": true,
       // "pathRewrite": { "^/api" : "" }
     },
