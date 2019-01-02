@@ -1,6 +1,6 @@
 import { routerRedux } from 'dva/router';
 import { stringify } from 'qs';
-import { fakeAccountLogin, getFakeCaptcha } from '@/services/api';
+import { loginPost, getFakeCaptcha, logOut } from '@/services/api';
 import { setAuthority } from '@/utils/authority';
 import { getPageQuery } from '@/utils/utils';
 import { reloadAuthorized } from '@/utils/Authorized';
@@ -14,13 +14,13 @@ export default {
 
   effects: {
     *login({ payload }, { call, put }) {
-      const response = yield call(fakeAccountLogin, payload);
+      const response = yield call(loginPost, payload);
       yield put({
         type: 'changeLoginStatus',
         payload: response,
       });
       // Login successfully
-      if (response.status === 'ok') {
+      if (response.status === 'success') {
         reloadAuthorized();
         const urlParams = new URL(window.location.href);
         const params = getPageQuery();
@@ -45,29 +45,35 @@ export default {
       yield call(getFakeCaptcha, payload);
     },
 
-    *logout(_, { put }) {
-      yield put({
-        type: 'changeLoginStatus',
-        payload: {
-          status: false,
-          currentAuthority: 'guest',
-        },
-      });
-      reloadAuthorized();
-      yield put(
-        routerRedux.push({
-          pathname: '/user/login',
-          search: stringify({
-            redirect: window.location.href,
-          }),
-        })
-      );
+    *logout(_, { call, put }) {
+      const response = yield call(logOut);
+      if (response.status === 'success') {
+        yield put(
+          routerRedux.push({
+            pathname: '/user/login',
+            search: stringify({
+              redirect: window.location.href,
+            }),
+          })
+        );
+      }
     },
   },
 
   reducers: {
     changeLoginStatus(state, { payload }) {
-      setAuthority(payload.currentAuthority);
+      console.log(payload);
+      const userType = payload.data.department === 1 ? "admin" : "user";
+      setAuthority(userType);
+      return {
+        ...state,
+        status: payload.status,
+        data: payload.data,
+      };
+    },
+    logOut(state, { payload }) {
+      const userType = payload.data.department === 1 ? "admin" : "user";
+      setAuthority(userType);
       return {
         ...state,
         status: payload.status,
