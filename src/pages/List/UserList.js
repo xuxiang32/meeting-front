@@ -209,7 +209,7 @@ class UserList extends Component {
     const _this = this;
     confirm({
       title: '删除提示框',
-      content: '确认删除该会议室？',
+      content: '确认删除该用户？',
       okText: '确定',
       cancelText: '取消',
       onOk() {
