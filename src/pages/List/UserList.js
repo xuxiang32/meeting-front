@@ -249,7 +249,7 @@ class UserList extends Component {
           <Fragment>
             <a onClick={() => this.handleUpdateModalVisible(true, record)}>编辑</a>
             <Divider type="vertical" />
-            <a onClick={() => this.handleDelete(record)}>删除</a>
+            <a onClick={() => this.showConfirm(record)}>删除</a>
           </Fragment>
         ),
       },
