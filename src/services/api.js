@@ -162,6 +162,30 @@ export async function deleteMeetList(id) {
     });
 }
 
+// users
+
+export async function queryUserList() {
+  return request('/api/user/getUserList',
+    {
+      method: 'GET',
+    });
+}
+
+export async function addUser(params) {
+  return request('/api/user/addNewUser',
+    {
+      method: 'POST',
+      body: params
+    });
+}
+
+export async function deleteUser(id) {
+  return request(`/api/user/deleteUser/${id}`,
+    {
+      method: 'DELETE',
+      payload: id
+    });
+}
 
 
 

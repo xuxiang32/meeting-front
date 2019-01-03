@@ -302,24 +302,7 @@ class TableList extends PureComponent {
     {
       title: '状态',
       dataIndex: 'status',
-      // filters: [
-      //   {
-      //     text: status[0],
-      //     value: 0,
-      //   },
-      //   {
-      //     text: status[1],
-      //     value: 1,
-      //   },
-      //   {
-      //     text: status[2],
-      //     value: 2,
-      //   },
-      //   {
-      //     text: status[3],
-      //     value: 3,
-      //   },
-      // ],
+
       render(val) {
         return <Badge status={statusMap[val]} text={status[val]} />;
       },
@@ -425,8 +408,8 @@ class TableList extends PureComponent {
   };
 
   handleSearch = e => {
+    console.info(e);
     e.preventDefault();
-
     const { dispatch, form } = this.props;
 
     form.validateFields((err, fieldsValue) => {
@@ -444,6 +427,8 @@ class TableList extends PureComponent {
       dispatch({
         type: 'rule/fetch',
         payload: values,
+      }).then((response)=>{
+        console.info('response---',response);
       });
     });
   };

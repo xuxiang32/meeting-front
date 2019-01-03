@@ -32,9 +32,9 @@ export default [
         name: 'list',
         routes: [
           {
-            path: '/list/table-list',
+            path: '/list/userList',
             name: 'userlist',
-            component: './List/TableList',
+            component: './List/UserList',
           },
           {
             path: '/list/List',

@@ -1,19 +1,16 @@
 import React, { Component } from 'react';
 import { connect } from 'dva';
 import { formatMessage, FormattedMessage } from 'umi/locale';
-import { Row, Col, Icon, Card, Tabs, Table, Radio, DatePicker, Tooltip, Menu, Dropdown, } from 'antd';
-import { ChartCard, MiniArea, MiniBar, MiniProgress, Field, Bar, Pie, TimelineChart, } from '@/components/Charts';
+import { Row, Col, Icon, Card, Tabs, Table, Radio,  Avatar, Tooltip, Menu, Dropdown, } from 'antd';
+import { MiniArea, Pie } from '@/components/Charts';
 import Trend from '@/components/Trend';
 import NumberInfo from '@/components/NumberInfo';
 import numeral from 'numeral';
-import GridContent from '@/components/PageHeaderWrapper/GridContent';
+import PageHeaderWrapper from '@/components/PageHeaderWrapper';
 import Yuan from '@/utils/Yuan';
 import { getTimeDistance } from '@/utils/utils';
-
+import avarIcon from '@/assets/logo.svg';
 import styles from './Analysis.less';
-
-const { TabPane } = Tabs;
-const { RangePicker } = DatePicker;
 
 const rankingListData = [];
 for (let i = 0; i < 7; i += 1) {
@@ -122,12 +119,9 @@ class Analysis extends Component {
     const { rangePickerValue, salesType, loading: stateLoading, currentTabKey } = this.state;
     const { chart, loading: propsLoading } = this.props;
     const {
-      visitData,
       visitData2,
-      salesData,
       searchData,
       offlineData,
-      offlineChartData,
       salesTypeData,
       salesTypeDataOnline,
       salesTypeDataOffline,
@@ -152,30 +146,6 @@ class Analysis extends Component {
           <Icon type="ellipsis" />
         </Dropdown>
       </span>
-    );
-
-    const salesExtra = (
-      <div className={styles.salesExtraWrap}>
-        <div className={styles.salesExtra}>
-          <a className={this.isActive('today')} onClick={() => this.selectDate('today')}>
-            <FormattedMessage id="app.analysis.all-day" defaultMessage="All Day" />
-          </a>
-          <a className={this.isActive('week')} onClick={() => this.selectDate('week')}>
-            <FormattedMessage id="app.analysis.all-week" defaultMessage="All Week" />
-          </a>
-          <a className={this.isActive('month')} onClick={() => this.selectDate('month')}>
-            <FormattedMessage id="app.analysis.all-month" defaultMessage="All Month" />
-          </a>
-          <a className={this.isActive('year')} onClick={() => this.selectDate('year')}>
-            <FormattedMessage id="app.analysis.all-year" defaultMessage="All Year" />
-          </a>
-        </div>
-        <RangePicker
-          value={rangePickerValue}
-          onChange={this.handleRangePickerChange}
-          style={{ width: 256 }}
-        />
-      </div>
     );
 
     const columns = [
@@ -218,51 +188,28 @@ class Analysis extends Component {
       },
     ];
 
-    const activeKey = currentTabKey || (offlineData[0] && offlineData[0].name);
-
-    const CustomTab = ({ data, currentTabKey: currentKey }) => (
-      <Row gutter={8} style={{ width: 138, margin: '8px 0' }}>
-        <Col span={12}>
-          <NumberInfo
-            title={data.name}
-            subTitle={
-              <FormattedMessage
-                id="app.analysis.conversion-rate"
-                defaultMessage="Conversion Rate"
-              />
-            }
-            gap={2}
-            total={`${data.cvr * 100}%`}
-            theme={currentKey !== data.name && 'light'}
-          />
-        </Col>
-        <Col span={12} style={{ paddingTop: 36 }}>
-          <Pie
-            animate={false}
-            color={currentKey !== data.name && '#BDE4FF'}
-            inner={0.55}
-            tooltip={false}
-            margin={[0, 0, 0, 0]}
-            percent={data.cvr * 100}
-            height={64}
-          />
-        </Col>
-      </Row>
-    );
-
-    const topColResponsiveProps = {
-      xs: 24,
-      sm: 12,
-      md: 12,
-      lg: 12,
-      xl: 6,
-      style: { marginBottom: 24 },
-    };
-
     console.info('salesPieData',salesPieData);
 
+    const handlePageContent = (
+      <div className={styles.pageHeaderContent}>
+        <div className={styles.avatar}>
+          <Avatar size="large" src={avarIcon} />
+        </div>
+        <div className={styles.content}>
+          <div className={styles.contentTitle}>
+            Hi，码农，新的一天开始啦！！
+          </div>
+          <div>
+          交互设计师 | 基础平台部－用户体验技术部－UED
+          </div>
+        </div>
+      </div>
+    );
+
     return (
-      <GridContent>
+      <PageHeaderWrapper
+        content={handlePageContent}
+      >
         <Row gutter={24}>
           <Col xl={12} lg={24} md={24} sm={24} xs={24}>
             <Card
@@ -392,7 +339,7 @@ class Analysis extends Component {
             </Card>
           </Col>
         </Row>
-      </GridContent>
+      </PageHeaderWrapper>
     );
   }
 }

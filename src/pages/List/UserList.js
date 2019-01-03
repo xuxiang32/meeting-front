@@ -34,29 +34,34 @@ const CreateForm = Form.create()(props => {
   return (
     <Modal
       destroyOnClose
-      title="新增会议室"
+      title="添加用户"
       visible={modalVisible}
       onOk={okHandle}
       onCancel={() => handleModalVisible()}
     >
-      <FormItem {...formlayout} label="会议室名称">
+      <FormItem {...formlayout} label="用户名称">
         {form.getFieldDecorator('name', {
-          rules: [{ required: true, message: '请输入会议室名称！'}],
+          rules: [{ required: true, message: '请输入用户名称！'}],
         })(<Input placeholder="请输入" />)}
       </FormItem>
-      <FormItem {...formlayout} label="状态">
-        {form.getFieldDecorator('status', {
-          rules: [{ required: true, message: '请输入会议室状态！'}],
+      <FormItem {...formlayout} label="所属部门">
+        {form.getFieldDecorator('department', {
+          rules: [{ required: true, message: '请选择所属部门！'}],
         })(
           <Select placeholder="请选择" style={{ width: '100%' }}>
-            <Option value="0">闲置</Option>
-            <Option value="1">使用中</Option>
+            <Option value="0">综合部</Option>
+            <Option value="1">研发部</Option>
           </Select>
         )}
       </FormItem>
-      <FormItem {...formlayout} label="会议室门号">
-        {form.getFieldDecorator('location', {
-          rules: [{ required: true, message: '请输入会议室位置！'}],
+      <FormItem {...formlayout} label="账号">
+        {form.getFieldDecorator('account', {
+          rules: [{ required: true, message: '请输入账号！'}],
+        })(<Input placeholder="请输入" />)}
+      </FormItem>
+      <FormItem {...formlayout} label="密码">
+        {form.getFieldDecorator('password', {
+          rules: [{ required: true, message: '请输入密码！'}],
         })(<Input placeholder="请输入" />)}
       </FormItem>
     </Modal>
@@ -69,7 +74,7 @@ const CreateForm = Form.create()(props => {
 }))
 @Form.create()
 
-class MeetingList extends Component {
+class UserList extends Component {
   state = {
     expandForm: false,
     selectedRows: [],
@@ -82,13 +87,13 @@ class MeetingList extends Component {
     const {dispatch} = this.props;
 
     dispatch({
-      type: 'rule/fetch',
+      type: 'rule/getUsers',
     }).then((response)=>{
-      // console.log('response+++',response.data);
+      console.log('response+++',response.data);
       const newData = response.data.map((item,index)=>({
-          ...item,
-          key:`meet${index+1}`
-        }));
+        ...item,
+        key:`meet${index+1}`
+      }));
       this.setState({
         meetData: newData
       })
@@ -129,18 +134,8 @@ class MeetingList extends Component {
       <Form onSubmit={this.handleSearch} layout="inline">
         <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
           <Col md={8} sm={24}>
-            <FormItem label="会议室名称">
+            <FormItem label="用户名称">
               {getFieldDecorator('name')(<Input placeholder="请输入" />)}
-            </FormItem>
-          </Col>
-          <Col md={8} sm={24}>
-            <FormItem label="状态">
-              {getFieldDecorator('status')(
-                <Select placeholder="请选择" style={{ width: '100%' }}>
-                  <Option value="0">闲置</Option>
-                  <Option value="1">使用中</Option>
-                </Select>
-              )}
             </FormItem>
           </Col>
           <Col md={8} sm={24}>
@@ -182,7 +177,7 @@ class MeetingList extends Component {
     const { dispatch } = this.props;
     console.info('fields',fields);
     dispatch({
-      type: 'rule/addMeet',
+      type: 'rule/addUsers',
       payload: {
         ...fields
       },
@@ -203,7 +198,7 @@ class MeetingList extends Component {
     // console.info('values----',values);
     const { dispatch } = this.props;
     dispatch({
-      type: 'rule/deleteMeet',
+      type: 'rule/deleteUsers',
       payload: values.id,
     });
     this.reloadTable();
@@ -233,32 +228,18 @@ class MeetingList extends Component {
     // console.info('data----',data);
     const columns = [
       {
-        title: '会议室名称',
-        dataIndex: 'name',
-        key:'meetname',
+        title: '用户名',
+        dataIndex: 'username',
+        key:'username',
       },
       {
-        title: '状态',
-        dataIndex: 'status',
-        key:'meetstatus',
-        render(val) {
-          // let newS = '';
-          // switch (val){
-          //   case true :
-          //     newS = 0;
-          //     break;
-          //   case false:
-          //     newS = 1;
-          //     break;
-          //   default:
-          //     break;
-          // }
-          return <Badge status={statusMap[val]} text={status[val]} />;
-        },
+        title: '账户',
+        dataIndex: 'account',
+        key:'useraccount',
       },
       {
-        title: '更新时间',
-        dataIndex: 'createtime',
+        title: '密码',
+        dataIndex: 'password',
         key:'meettime',
       },
       {
@@ -266,11 +247,9 @@ class MeetingList extends Component {
         key:'operate',
         render: (text, record) => (
           <Fragment>
-            <a onClick={() => this.handleUpdateModalVisible(true, record)}>预约</a>
+            <a onClick={() => this.handleUpdateModalVisible(true, record)}>编辑</a>
             <Divider type="vertical" />
-            <a onClick={() => this.handleDetail(true, record)}>查看详情</a>
-            <Divider type="vertical" />
-            <a onClick={() => this.showConfirm(record)}>删除</a>
+            <a onClick={() => this.handleDelete(record)}>删除</a>
           </Fragment>
         ),
       },
@@ -290,7 +269,7 @@ class MeetingList extends Component {
     };
 
     return (
-      <PageHeaderWrapper title="会议室列表">
+      <PageHeaderWrapper title="用户列表">
         <Card bordered={false}>
           <div className={styles.tableList}>
             <div className={styles.tableListForm}>{this.renderForm()}</div>
@@ -323,4 +302,4 @@ class MeetingList extends Component {
   }
 }
 
-export default MeetingList;
+export default UserList;
