@@ -108,8 +108,13 @@ export default {
     mergeRules: false,
   },
   proxy: {
-    "/api": {
-      "target": "http://118.25.11.35:9099/",
+    /* "/api": { // mock
+      "target": "http://rap2api.taobao.org/app/mock/118863/",
+      "changeOrigin": true,
+      // "pathRewrite": { "^/api" : "" }
+    }, */
+    "/api": { // localhost
+      "target": "http://118.25.11.35:10000/",
       "changeOrigin": true,
       // "pathRewrite": { "^/api" : "" }
     },
