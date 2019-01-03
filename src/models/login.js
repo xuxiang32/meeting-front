@@ -62,8 +62,7 @@ export default {
 
   reducers: {
     changeLoginStatus(state, { payload }) {
-      console.log(payload);
-      const userType = payload.data.department === 1 ? "admin" : "user";
+      const userType = payload.data.department === 1 ? 'admin' : 'user';
       setAuthority(userType);
       return {
         ...state,
@@ -72,7 +71,7 @@ export default {
       };
     },
     logOut(state, { payload }) {
-      const userType = payload.data.department === 1 ? "admin" : "user";
+      const userType = payload.data.department === 1 ? 'admin' : 'user';
       setAuthority(userType);
       return {
         ...state,
