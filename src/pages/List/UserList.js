@@ -20,11 +20,8 @@ const CreateForm = Form.create()(props => {
   const { modalVisible, form, handleAdd, handleModalVisible } = props;
   const okHandle = () => {
     form.validateFields((err, fieldsValue) => {
-      let newFormVal = {};
-      const newStatus = parseInt(fieldsValue.status);
-      newFormVal = {
-        ...fieldsValue,
-        status: newStatus
+      let newFormVal = {
+        ...fieldsValue
       };
       if (err) return;
       form.resetFields();
@@ -118,7 +115,7 @@ class UserList extends Component {
       // });
 
       dispatch({
-        type: 'rule/fetch',
+        type: 'rule/getUsers',
         payload: values,
       }).then((response)=>{
         console.info('response---',response);
@@ -161,7 +158,7 @@ class UserList extends Component {
   reloadTable = () => {
     const {dispatch} = this.props;
     dispatch({
-      type: 'rule/fetch',
+      type: 'rule/getUsers',
     }).then((response)=>{
       const newData = response.data.map((item,index)=>({
         ...item,
