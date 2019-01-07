@@ -1,17 +1,14 @@
-/* eslint-disable react/destructuring-assignment,react/jsx-curly-spacing */
+/* eslint-disable react/destructuring-assignment,react/jsx-curly-spacing,react/jsx-closing-tag-location */
 import React, { PureComponent } from 'react';
-import {
-  Drawer, Form, Button, Col, Row, Input, Select, DatePicker, Icon,
-} from 'antd';
+import { Drawer, Form, Button, Col, Row, Input, Select, DatePicker } from 'antd';
 
 const { Option } = Select;
-
 class DrawerForm extends PureComponent {
 
   render() {
     const { getFieldDecorator } = this.props.form;
     const { visible, onClose } = this.props;
-    console.info(111);
+    // console.info(111);
     return <Drawer
       title="预约会议"
       width={720}
@@ -30,7 +27,7 @@ class DrawerForm extends PureComponent {
             <Form.Item label="Name">
               {getFieldDecorator('name', {
                 rules: [{ required: true, message: 'Please enter user name' }],
-              })(<Input placeholder="Please enter user name"/>)}
+              })(<Input placeholder="Please enter user name" />)}
             </Form.Item>
           </Col>
           <Col span={12}>
@@ -119,7 +116,7 @@ class DrawerForm extends PureComponent {
                   },
                 ],
               })(
-                <Input.TextArea rows={4} placeholder="please enter url description"/>)}
+                <Input.TextArea rows={4} placeholder="please enter url description" />)}
             </Form.Item>
           </Col>
         </Row>
@@ -143,7 +140,7 @@ class DrawerForm extends PureComponent {
           Submit
         </Button>
       </div>
-    </Drawer>;
+    </Drawer>
   }
 }
 const MeetDrawer = Form.create()(DrawerForm);

@@ -290,4 +290,17 @@ export default {
   'app.setting.copyinfo': '拷贝成功，请到 src/defaultSettings.js 中替换默认配置',
   'app.setting.production.hint':
     '配置栏只在开发环境用于预览，生产环境不会展现，请拷贝后手动修改配置文件',
+  'SYSTEM_ERROR':'未登录',
+  'OPERATE_SUCCESS':'操作成功',
+  'NOT_LOGIN_IN':'未登录',
+  'PSW_ERROR':'用户名或密码错误',
+  'MISS_USER_ACCOUNT':'账号名为空',
+  'MISS_USERNAME':'昵称为空',
+  'MISS_DEPARTMENT':'部门为空',
+  'EXISTING_ACCOUNT':'账户已存在',
+  'EXISTING_USERNAME':'昵称已存在',
+  'NOT_EXIST_USER':'用户不存在',
+  'EXISTING_MEETINGROOM_NAME':'会议室名称重复',
+  'MEETINGROOM_BUSYING':'会议室房间号已使用',
+  'MEETING_TIME_RANGE_ERROR"':'会议时间不对',
 };

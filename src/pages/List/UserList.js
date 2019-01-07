@@ -1,8 +1,9 @@
+/* eslint-disable prefer-const */
 import React, { Component,Fragment } from 'react';
 import { connect } from 'dva';
 import { Row, Col, Card, Form, Input, Select, Icon, Button, Dropdown, Menu, InputNumber, DatePicker, Badge, Divider, message,Table,Modal} from 'antd';
 import PageHeaderWrapper from '@/components/PageHeaderWrapper';
-// import StandardTable from '@/components/StandardTable';
+import { formatMessage, FormattedMessage } from 'umi/locale';
 import styles from './TableList.less';
 // import moment from 'moment';
 const FormItem = Form.Item;
@@ -31,13 +32,13 @@ const CreateForm = Form.create()(props => {
   return (
     <Modal
       destroyOnClose
-      title="添加用户"
+      title={"添加用户"}
       visible={modalVisible}
       onOk={okHandle}
       onCancel={() => handleModalVisible()}
     >
       <FormItem {...formlayout} label="用户名称">
-        {form.getFieldDecorator('name', {
+        {form.getFieldDecorator('username', {
           rules: [{ required: true, message: '请输入用户名称！'}],
         })(<Input placeholder="请输入" />)}
       </FormItem>
@@ -77,7 +78,7 @@ class UserList extends Component {
     selectedRows: [],
     meetData:[],
     modalVisible: false,
-    formValues:{}
+    updateData:{}
   };
 
   componentDidMount() {
@@ -86,7 +87,7 @@ class UserList extends Component {
     dispatch({
       type: 'rule/getUsers',
     }).then((response)=>{
-      console.log('response+++',response.data);
+      // console.log('response+++',response.data);
       const newData = response.data.map((item,index)=>({
         ...item,
         key:`meet${index+1}`
@@ -107,18 +108,12 @@ class UserList extends Component {
       const values = {
         ...fieldsValue
       };
-
-      console.info('values---',values);
-
-      // this.setState({
-      //   formValues: values,
-      // });
-
       dispatch({
         type: 'rule/getUsers',
         payload: values,
       }).then((response)=>{
         console.info('response---',response);
+
       });
     });
   };
@@ -172,23 +167,36 @@ class UserList extends Component {
 
   handleAdd = fields => {
     const { dispatch } = this.props;
-    console.info('fields',fields);
+    // console.info('fields',fields);
     dispatch({
       type: 'rule/addUsers',
       payload: {
         ...fields
       },
+    }).then((response)=>{
+      // console.info(response);
+      if(response.status === 'success'){
+        message.success(formatMessage({ id: response.data }));
+        this.handleModalVisible();
+        this.reloadTable();
+      }
+      else{
+        message.error(formatMessage({ id: response.data }));
+      }
     });
 
-    message.success('添加成功');
-    this.handleModalVisible();
-    this.reloadTable();
+
   };
 
-  handleModalVisible = flag => {
+  handleModalVisible = (flag,record) => {
     this.setState({
       modalVisible: !!flag,
     });
+    if(record){
+      this.setState({
+        updateData: record,
+      });
+    }
   };
 
   handleDelete = (values) => {
@@ -197,6 +205,8 @@ class UserList extends Component {
     dispatch({
       type: 'rule/deleteUsers',
       payload: values.id,
+    }).then((response)=>{
+      console.info(response);
     });
     this.reloadTable();
   };
@@ -244,7 +254,7 @@ class UserList extends Component {
         key:'operate',
         render: (text, record) => (
           <Fragment>
-            <a onClick={() => this.handleUpdateModalVisible(true, record)}>编辑</a>
+            <a onClick={() => this.handleModalVisible(true,record)}>编辑</a>
             <Divider type="vertical" />
             <a onClick={() => this.showConfirm(record)}>删除</a>
           </Fragment>

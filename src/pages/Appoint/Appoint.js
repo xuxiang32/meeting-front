@@ -9,7 +9,6 @@ import {
 } from 'antd';
 import PageHeaderWrapper from '@/components/PageHeaderWrapper';
 import MeetDrawer from './MeetDrawer';
-
 import styles from './appoint.less';
 
 @connect(({ loading }) => ({
