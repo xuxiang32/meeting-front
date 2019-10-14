@@ -113,10 +113,16 @@ export default {
       "changeOrigin": true,
       // "pathRewrite": { "^/api" : "" }
     }, */
-    "/api": { // localhost
+    /* "/api": { // 118.25.11.35
       "target": "http://118.25.11.35:10000/",
       "changeOrigin": true,
       // "pathRewrite": { "^/api" : "" }
+    }, */
+    '/api': {
+      // localhost
+      target: 'http://localhost:10000/',
+      changeOrigin: true,
+      // "pathRewrite": { "^/api" : "" }
     },
-  }
+  },
 };

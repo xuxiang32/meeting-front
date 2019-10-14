@@ -37,25 +37,6 @@ const checkStatus = response => {
   throw error;
 };
 
-const cachedSave = (response, hashcode) => {
-  /**
-   * Clone a response data and store it in sessionStorage
-   * Does not support data other than json, Cache only json
-   */
-  const contentType = response.headers.get('Content-Type');
-  if (contentType && contentType.match(/application\/json/i)) {
-    // All data is saved as text
-    response
-      .clone()
-      .text()
-      .then(content => {
-        sessionStorage.setItem(hashcode, content);
-        sessionStorage.setItem(`${hashcode}:timestamp`, Date.now());
-      });
-  }
-  return response;
-};
-
 /**
  * Requests a URL, returning a promise.
  *
@@ -78,10 +59,15 @@ export default function request(url, option) {
     .update(fingerprint)
     .digest('hex');
 
+  const token = sessionStorage.getItem('token');
   const defaultOptions = {
     credentials: 'include',
+    headers: {
+      Token: token || '',
+    },
   };
   const newOptions = { ...defaultOptions, ...options };
+
   if (
     newOptions.method === 'POST' ||
     newOptions.method === 'PUT' ||
@@ -91,6 +77,7 @@ export default function request(url, option) {
       newOptions.headers = {
         Accept: 'application/json',
         'Content-Type': 'application/json; charset=utf-8',
+        Token: token || '',
         ...newOptions.headers,
       };
       newOptions.body = JSON.stringify(newOptions.body);
@@ -98,6 +85,7 @@ export default function request(url, option) {
       // newOptions.body is FormData
       newOptions.headers = {
         Accept: 'application/json',
+        Token: token || '',
         ...newOptions.headers,
       };
     }
@@ -120,17 +108,17 @@ export default function request(url, option) {
   }
   return fetch(url, newOptions)
     .then(checkStatus)
-    .then(response => cachedSave(response, hashcode))
     .then(response => {
       // DELETE and 204 do not return data by default
       // using .json will report an error.
-      if (newOptions.method === 'DELETE' || response.status === 204) {
+      if (response.status === 204) {
         return response.text();
       }
       return response.json();
     })
     .catch(e => {
       const status = e.name;
+      sessionStorage.removeItem('token');
       if (status === 401) {
         // @HACK
         /* eslint-disable no-underscore-dangle */

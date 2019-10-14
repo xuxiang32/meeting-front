@@ -1,28 +1,47 @@
 /* eslint-disable prefer-const */
-import React, { Component,Fragment } from 'react';
+import React, { Component, Fragment } from 'react';
 import { connect } from 'dva';
-import { Row, Col, Card, Form, Input, Select, Icon, Button, Dropdown, Menu, InputNumber, DatePicker, Badge, Divider, message,Table,Modal} from 'antd';
+import {
+  Row,
+  Col,
+  Card,
+  Form,
+  Input,
+  Select,
+  Icon,
+  Button,
+  Dropdown,
+  Menu,
+  InputNumber,
+  DatePicker,
+  Badge,
+  Divider,
+  message,
+  Table,
+  Modal,
+} from 'antd';
 import PageHeaderWrapper from '@/components/PageHeaderWrapper';
 import { formatMessage, FormattedMessage } from 'umi/locale';
 import styles from './TableList.less';
+import getErrMsg from '@/utils/handleErrCode';
 // import moment from 'moment';
 const FormItem = Form.Item;
-const {confirm} = Modal;
+const { confirm } = Modal;
 const statusMap = ['default', 'processing'];
 const status = ['闲置', '使用中'];
 const { Option } = Select;
 
 const formlayout = {
-  labelCol:{ span: 5 },
-  wrapperCol:{ span: 15 }
+  labelCol: { span: 5 },
+  wrapperCol: { span: 15 },
 };
 
 const CreateForm = Form.create()(props => {
-  const { modalVisible, form, handleAdd, handleModalVisible } = props;
+  const { modalVisible, form, handleAdd, handleModalVisible, updateData } = props;
   const okHandle = () => {
     form.validateFields((err, fieldsValue) => {
       let newFormVal = {
-        ...fieldsValue
+        ...fieldsValue,
       };
       if (err) return;
       form.resetFields();
@@ -32,70 +51,59 @@ const CreateForm = Form.create()(props => {
   return (
     <Modal
       destroyOnClose
-      title={"添加用户"}
+      title={'添加用户'}
       visible={modalVisible}
       onOk={okHandle}
       onCancel={() => handleModalVisible()}
     >
-      <FormItem {...formlayout} label="用户名称">
-        {form.getFieldDecorator('username', {
-          rules: [{ required: true, message: '请输入用户名称！'}],
-        })(<Input placeholder="请输入" />)}
-      </FormItem>
       <FormItem {...formlayout} label="所属部门">
         {form.getFieldDecorator('department', {
-          rules: [{ required: true, message: '请选择所属部门！'}],
+          initialValue: updateData.department ? updateData.department : '2',
+          rules: [{ required: true, message: '请选择所属部门！' }],
         })(
           <Select placeholder="请选择" style={{ width: '100%' }}>
-            <Option value="0">综合部</Option>
-            <Option value="1">研发部</Option>
+            <Option value="1">管理员</Option>
+            <Option value="2">员工</Option>
           </Select>
         )}
       </FormItem>
-      <FormItem {...formlayout} label="账号">
-        {form.getFieldDecorator('account', {
-          rules: [{ required: true, message: '请输入账号！'}],
+      <FormItem {...formlayout} label="姓名">
+        {form.getFieldDecorator('username', {
+          initialValue: updateData.username ? updateData.username : '',
+          rules: [{ required: true, message: '请输入账号！' }],
+        })(<Input placeholder="请输入" />)}
+      </FormItem>
+      <FormItem {...formlayout} label="手机号">
+        {form.getFieldDecorator('mobile', {
+          initialValue: updateData.mobile ? updateData.mobile : '',
+          rules: [{ required: true, message: '请输入用户名称！' }],
         })(<Input placeholder="请输入" />)}
       </FormItem>
       <FormItem {...formlayout} label="密码">
         {form.getFieldDecorator('password', {
-          rules: [{ required: true, message: '请输入密码！'}],
-        })(<Input placeholder="请输入" />)}
+          rules: [{ required: true, message: '请输入密码！' }],
+        })(<Input placeholder="请输入" type="password" />)}
       </FormItem>
     </Modal>
   );
 });
 
-@connect(({ rule,loading }) => ({
+@connect(({ rule, loading }) => ({
   rule,
   loading: loading.models.rule,
 }))
 @Form.create()
-
 class UserList extends Component {
   state = {
     expandForm: false,
     selectedRows: [],
-    meetData:[],
+    meetData: [],
     modalVisible: false,
-    updateData:{}
+    updateData: {},
   };
 
   componentDidMount() {
-    const {dispatch} = this.props;
-
-    dispatch({
-      type: 'rule/getUsers',
-    }).then((response)=>{
-      // console.log('response+++',response.data);
-      const newData = response.data.map((item,index)=>({
-        ...item,
-        key:`meet${index+1}`
-      }));
-      this.setState({
-        meetData: newData
-      })
-    });
+    this.reloadTable();
   }
 
   handleSearch = e => {
@@ -106,14 +114,13 @@ class UserList extends Component {
       if (err) return;
 
       const values = {
-        ...fieldsValue
+        ...fieldsValue,
       };
       dispatch({
         type: 'rule/getUsers',
         payload: values,
-      }).then((response)=>{
-        console.info('response---',response);
-
+      }).then(response => {
+        console.info('response---', response);
       });
     });
   };
@@ -151,17 +158,21 @@ class UserList extends Component {
   };
 
   reloadTable = () => {
-    const {dispatch} = this.props;
+    const { dispatch } = this.props;
     dispatch({
       type: 'rule/getUsers',
-    }).then((response)=>{
-      const newData = response.data.map((item,index)=>({
-        ...item,
-        key:`meet${index+1}`
-      }));
-      this.setState({
-        meetData: newData
-      })
+    }).then(response => {
+      if (response.status === 'success') {
+        const newData = response.data.map((item, index) => ({
+          ...item,
+          key: `meet${index + 1}`,
+        }));
+        this.setState({
+          meetData: newData,
+        });
+      } else {
+        message.error(getErrMsg(''));
+      }
     });
   };
 
@@ -171,90 +182,102 @@ class UserList extends Component {
     dispatch({
       type: 'rule/addUsers',
       payload: {
-        ...fields
+        ...fields,
       },
-    }).then((response)=>{
+    }).then(response => {
       // console.info(response);
-      if(response.status === 'success'){
-        message.success(formatMessage({ id: response.data }));
+      if (response.status === 'success') {
+        message.success(getErrMsg('ADD_SUCCESS'));
         this.handleModalVisible();
         this.reloadTable();
-      }
-      else{
-        message.error(formatMessage({ id: response.data }));
+      } else {
+        message.error(getErrMsg(response.msg));
       }
     });
-
-
   };
 
-  handleModalVisible = (flag,record) => {
+  handleModalVisible = (flag, record) => {
     this.setState({
       modalVisible: !!flag,
     });
-    if(record){
+    if (record) {
       this.setState({
         updateData: record,
       });
     }
   };
 
-  handleDelete = (values) => {
+  handleDelete = values => {
     // console.info('values----',values);
     const { dispatch } = this.props;
     dispatch({
       type: 'rule/deleteUsers',
       payload: values.id,
-    }).then((response)=>{
-      console.info(response);
+    }).then(response => {
+      if (response.status === 'success') {
+        message.success(getErrMsg('OPERATE_SUCCESS'));
+        this.reloadTable();
+      }
     });
-    this.reloadTable();
   };
 
-  showConfirm = (record) => {
+  showConfirm = record => {
     // console.log('record++++++',record);
-    const _this = this;
+    const that = this;
     confirm({
       title: '删除提示框',
       content: '确认删除该用户？',
       okText: '确定',
       cancelText: '取消',
       onOk() {
-        _this.handleDelete(record);
+        that.handleDelete(record);
       },
-      onCancel() {
-      },
+      onCancel() {},
     });
   };
 
   render() {
     const {
       rule: { data },
-      loading
+      loading,
     } = this.props;
     // console.info('data----',data);
     const columns = [
       {
-        title: '用户名',
-        dataIndex: 'username',
-        key:'username',
-      },
-      {
         title: '账户',
-        dataIndex: 'account',
-        key:'useraccount',
+        dataIndex: 'mobile',
+        key: 'mobile',
       },
       {
-        title: '密码',
-        dataIndex: 'password',
-        key:'meettime',
+        title: '部门',
+        dataIndex: 'department',
+        key: 'department',
+        render: (text, record) => (
+          <Fragment>
+            {+record.department === 1 ? (
+              <Badge status="error" text="管理员" />
+            ) : (
+              <Badge status="success" text="员工" />
+            )}
+          </Fragment>
+        ),
+      },
+      {
+        title: '创建时间',
+        dataIndex: 'createdtime',
+        key: 'createdtime',
+      },
+      {
+        title: '最后一次登陆时间',
+        dataIndex: 'logintime',
+        key: 'logintime',
       },
       {
         title: '操作',
-        key:'operate',
+        key: 'operate',
         render: (text, record) => (
           <Fragment>
-            <a onClick={() => this.handleModalVisible(true,record)}>编辑</a>
+            <a onClick={() => this.handleModalVisible(true, record)}>编辑</a>
             <Divider type="vertical" />
             <a onClick={() => this.showConfirm(record)}>删除</a>
           </Fragment>
@@ -262,7 +285,7 @@ class UserList extends Component {
       },
     ];
 
-    const { selectedRows , meetData , modalVisible } = this.state;
+    const { selectedRows, meetData, modalVisible, updateData } = this.state;
     // console.info('----meetData',meetData);
     const menu = (
       <Menu onClick={this.handleMenuClick} selectedKeys={[]}>
@@ -295,15 +318,10 @@ class UserList extends Component {
                 </span>
               )}
             </div>
-            <Table
-              dataSource={meetData}
-              columns={columns}
-              loading={loading}
-              rowKey="key"
-            />
+            <Table dataSource={meetData} columns={columns} loading={loading} rowKey="key" />
           </div>
         </Card>
-        <CreateForm {...parentMethods} modalVisible={modalVisible} />
+        <CreateForm {...parentMethods} updateData={updateData} modalVisible={modalVisible} />
       </PageHeaderWrapper>
     );
   }

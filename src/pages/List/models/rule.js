@@ -1,4 +1,11 @@
-import { queryMeetList , addMeetRoom , deleteMeetList , queryUserList , addUser , deleteUser } from '@/services/api';
+import {
+  queryMeetList,
+  addMeetRoom,
+  deleteMeetList,
+  queryUserList,
+  addUser,
+  deleteUser,
+} from '@/services/api';
 
 export default {
   namespace: 'rule',
@@ -20,7 +27,7 @@ export default {
       });
       return response;
     },
-    *addMeet({ payload },{ call,put }){
+    *addMeet({ payload }, { call, put }) {
       const response = yield call(addMeetRoom, payload);
       yield put({
         type: 'save',
@@ -28,21 +35,20 @@ export default {
       });
       return response;
     },
-    *deleteMeet({ payload },{ call }){
+    *deleteMeet({ payload }, { call }) {
       // console.info('payload----',payload);
       const response = yield call(deleteMeetList, payload);
-      return response
+      return response;
     },
     *getUsers({ payload }, { call, put }) {
       const response = yield call(queryUserList, payload);
-      // console.log('response----',response);
       yield put({
         type: 'save',
         payload: response.data,
       });
       return response;
     },
-    *addUsers({ payload },{ call,put }){
+    *addUsers({ payload }, { call, put }) {
       const response = yield call(addUser, payload);
       yield put({
         type: 'save',
@@ -50,10 +56,10 @@ export default {
       });
       return response;
     },
-    *deleteUsers({ payload },{ call }){
+    *deleteUsers({ payload }, { call }) {
       // console.info('payload----',payload);
       const response = yield call(deleteUser, payload);
-      return response
+      return response;
     },
   },
 

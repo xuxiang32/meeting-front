@@ -14,7 +14,7 @@ const { Tab, UserName, Password, Mobile, Captcha, Submit } = Login;
 }))
 class LoginPage extends Component {
   state = {
-    type: 'account',
+    type: 'mobile',
     autoLogin: true,
   };
 
@@ -22,7 +22,7 @@ class LoginPage extends Component {
     this.setState({ type });
   };
 
-  onGetCaptcha = () =>
+  /* onGetCaptcha = () =>
     new Promise((resolve, reject) => {
       this.loginForm.validateFields(['mobile'], {}, (err, values) => {
         if (err) {
@@ -37,7 +37,7 @@ class LoginPage extends Component {
             .catch(reject);
         }
       });
-    });
+    }); */
 
   handleSubmit = (err, values) => {
     const { type } = this.state;
@@ -76,12 +76,12 @@ class LoginPage extends Component {
             this.loginForm = form;
           }}
         >
-          <Tab key="account" tab={formatMessage({ id: 'app.login.tab-login-credentials' })}>
+          <Tab key="mobile" tab={formatMessage({ id: 'app.login.tab-login-credentials' })}>
             {login.status === 'error' &&
-              login.type === 'account' &&
+              login.type === 'mobile' &&
               !submitting &&
               this.renderMessage(formatMessage({ id: 'app.login.message-invalid-credentials' }))}
-            <UserName name="account" placeholder="请输入账户" />
+            <UserName name="mobile" placeholder="请输入账户" />
             <Password
               name="password"
               placeholder="请输入密码"

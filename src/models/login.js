@@ -21,6 +21,7 @@ export default {
       });
       // Login successfully
       if (response.status === 'success') {
+        sessionStorage.setItem('token', response.data.token);
         reloadAuthorized();
         const urlParams = new URL(window.location.href);
         const params = getPageQuery();
